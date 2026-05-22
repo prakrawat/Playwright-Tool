@@ -1,0 +1,72 @@
+Playwright Test is an end-to-end test framework for modern web apps. 
+It bundles test runner, assertions, isolation, parallelization and rich tooling. 
+Playwright supports Chromium, WebKit and Firefox on Windows, Linux and macOS, locally or in CI, 
+headless or headed, with native mobile emulation for Chrome (Android) and Mobile Safari.
+
+
+Reliable End to End testing why??
+- Autowait capability, when u test any page may be it will take time to load, it will auto wait for test to execute.
+
+Cross Browser Compatibility & Multiple Platform
+- Chromium, Firefox, Opera
+
+Multilingual Flexibility - Ability to write code in python, javascript, java, C#, typescript.
+
+Tracing & Debugging: playwright have built in tracing & debugging capabilities including automatic screenshot, test video recording without writing single piece of code.
+- have testrunner where u have to see the Action, Before & After execution and everystep u will get the screenshot.
+
+Network Interception: we can utilize playwright API testing libraries to intercept and validate network calls within your web application, enable you to validate edge case scenario.
+
+Browser Context Management : bypass cookies for next testcase bcoz everytime we have to login to execute another testcase.
+
+Codegen Tools: when help u to create testcase code by recording your actions.
+
+
+
+Playwright.config.js help us to run the tests that we have added and created.
+
+
+In JavaScript, nesting means placing one construct (like an object, function, or loop) inside another to create a hierarchical or structured relationship.
+
+It’s a way to organize code and data more clearly, especially when dealing with complex logic or multi-level data structures.
+
+
+
+By default rach test enforces a 30 secound timeout.
+
+
+The course covers two powerful frameworks for designing test cases:
+- Playwright Cucumber BDD Framework
+- Playwright with Mocha
+
+
+https://techbeamers.com/manual-testing-interview-questions-experienced-qa/
+
+
+Css Selector user page.locator()
+
+If Id is present 
+css -> tagname#id( or ) #id
+
+If class attribute is present
+css -> tagname.class( or ) .class
+
+Write css based on any Attribute
+css -> [attribute='value']
+
+Write css with traversing from Parent to child
+css -> parenttagname >> childtagname
+
+If needs to write the locator based on text
+text=''
+
+
+Assertions
+
+In Playwright, assertions are checks that validate whether your application behaves as expected during automated tests. 
+They are implemented using the expect() function, which compares an actual value (from the app under test) to an expected value. 
+If the condition fails, the test is marked as failed.
+
+
+Practice Sites
+https://rahulshettyacademy.com/practice
