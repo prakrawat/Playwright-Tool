@@ -106,13 +106,21 @@ await submitButton.click(); // Now the locator finds the element
 await expect(page.locator('button')).toBeVisible();
 ```
 
-### Wait
+### Wait (Auto-waiting)
 
 **Definition:** Playwright automatically waits for elements and conditions before taking action. This eliminates the need for manual sleep/timeout calls.
 
 **Types:**
 - **Implicit waits** - Automatically wait for elements to be ready (default behavior)
 - **Explicit waits** - Manually wait for specific conditions
+
+- Auto-waiting in Playwright is a feature that automatically waits for elements to be ready before interacting with them. This ensures your test scripts are stable, reliable, and free from common timing issues.
+
+Example:
+- await page.click(‘button#submit’);
+- You do not need to manually add waits like waitForSelector or setTimeout. Playwright will automatically wait for the button to become stable and clickable.
+
+
 
 ```javascript
 // Implicit wait - automatically waits up to 30s for element

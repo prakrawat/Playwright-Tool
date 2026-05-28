@@ -70,3 +70,48 @@ If the condition fails, the test is marked as failed.
 
 Practice Sites
 https://rahulshettyacademy.com/practice
+
+
+
+Features:
+Cross-browser support: Works with Chromium, Firefox, and WebKit (Chrome, Edge, Safari)
+Multiple language support: Supports JavaScript, TypeScript, Python, Java, and C#
+Auto-waiting: Automatically waits for elements to be ready before performing actions
+Headless and headed execution: Run tests in background or with a visible browser
+Network interception and mocking: Capture, modify, or block network requests
+Parallel execution: Run tests faster using multiple workers
+Mobile and device emulation: Test across different screen sizes and devices
+Powerful selectors: Supports CSS, XPath, text, and role-based locators
+Screenshots and videos: Capture execution for debugging and reporting
+Built-in API testing: Test backend APIs without needing external tools
+Because of this, Playwright enables fast, reliable, and scalable end-to-end testing across multiple browsers and platforms.
+
+
+
+
+
+Specific browser
+npx playwright test –project=firefox
+
+
+
+What is a browser context in Playwright?
+- A browser context in Playwright is like an incognito or private window. It allows you to create isolated browser sessions within a single browser instance.
+- Each context has its own cookies, local storage, and cache, perfect for testing multiple users in parallel.
+
+Why use contexts?
+- Simulate multiple users
+- Speed up tests by reusing a browser instance
+- Improve test isolation without launching multiple browsers
+
+
+How do you handle asynchronous operations like waiting for elements in Playwright?
+- Playwright has built-in auto-waiting, which means it automatically waits for elements to be ready before interacting with them. However, you can still use manual waiting when needed, especially for dynamic content.
+
+Example using waitForSelector():
+- await page.waitForSelector(‘#user-info’, { state: ‘visible’ });
+- await page.click(‘#user-info’);
+
+Example using expect() (preferred):
+- await expect(page.locator(‘#user-info’)).toBeVisible();
+- Playwright’s expect() assertion includes retries and ensures the element meets the condition before proceeding.

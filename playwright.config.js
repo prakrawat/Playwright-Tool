@@ -15,7 +15,7 @@ const configuration =({
 
   use: {
 
-    browserName: 'firefox',  // Set the browser to use for testing. In this case, it's set to 'chromium', which means tests will run on the Chromium browser (the open-source project behind Google Chrome). You can change this to 'firefox' or 'webkit' if you want to test on those browsers instead.
+    browserName: 'chromium',  // Set the browser to use for testing. In this case, it's set to 'chromium', which means tests will run on the Chromium browser (the open-source project behind Google Chrome). You can change this to 'firefox' or 'webkit' if you want to test on those browsers instead.
     headless: false, // Set headless mode to false, which means that the browser will be launched in a visible window during testing. This is useful for debugging and visually observing the test execution. If set to true, the browser will run in the background without a UI.
     
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
