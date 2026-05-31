@@ -1,7 +1,7 @@
 const {test, expect} = require('playwright/test') // import the test from the Playwright testing library
 
 
-test('Client App test : Testcase One', async({browser}) => {
+test.only('Client App test : Testcase One', async({browser}) => {
 
     const context = await browser.newContext(); // it's like a new fresh instance of browser (new context) and we can inject the cookies or plugins info if we want to, but in this case we are creating a fresh instance with cookies.
     const page = await context.newPage(); // create a new page in the browser context, which represents a single tab or window in browser.
@@ -86,7 +86,7 @@ test('Radio & Checkbox Buttons', async({browser})=> {
 
 
 
-test.only("Another Child Window", async({browser})=> {
+test("Another Child Window", async({browser})=> {
     const bcontext = await browser.newContext();
     const page = await bcontext.newPage();
     await page.goto('https://rahulshettyacademy.com/loginpagePractise/');
