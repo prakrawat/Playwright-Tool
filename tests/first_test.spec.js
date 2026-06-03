@@ -35,6 +35,7 @@ test('FirstTestcase', async ({ browser }) => {
 
 test.only('test2', async ({ page }) => {
     await page.goto('https://rahulshettyacademy.com/loginpagePractise/');
+    
     const title = await page.title();
     console.log(`Printing Title of Githubio site: ${title}`);
     await expect(page).toHaveTitle('LoginPage Practise | Rahul Shetty Academy');
