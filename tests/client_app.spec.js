@@ -131,6 +131,7 @@ test("Another Child Window", async({browser})=> {
     
     console.log("------------------------------");
     const login_email_input_value = await page.locator('#username').inputValue();
+    // const login  = await page.locator();
     console.log(login_email_input_value);  
     await page.pause();
     
