@@ -31,10 +31,17 @@ test('Contact Us', async({browser})=>{
     // filter method is used to filter the elements based on the text content
 
     await page.locator("app-card").filter({hasText: "Blackberry"}).getByRole("button").click(); 
+    
     // click on the add to cart button for the product with text "Blackberry"
 
-    await page.pause();
-
+    //await page.pause();
     // npm playwright test 'file name' --ui use for opening the Playwright Test Runner UI
 
 });
+
+// Playwright Inspector is a tool that allows you to inspect and debug your Playwright tests. 
+// It provides a visual interface to see the elements on the page, their properties, and how they interact with your test code. You can use it to identify locators, check element states, and troubleshoot issues in your tests. 
+// To use Playwright Inspector, you can run your tests with the --debug flag, which will open the inspector when a test fails or when you have a breakpoint in your code.
+
+// npx playwright test 'file name' --debug use for opening the Playwright Inspector when a test fails or when you have a breakpoint in your code.
+

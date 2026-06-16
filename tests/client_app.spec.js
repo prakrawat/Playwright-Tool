@@ -1,7 +1,7 @@
 const {test, expect} = require('playwright/test') // import the test from the Playwright testing library
 
 
-test.only('Client App test : Testcase One', async({browser}) => {
+test('Client App test : Testcase One', async({browser}) => {
 
     const context = await browser.newContext(); // it's like a new fresh instance of browser (new context) and we can inject the cookies or plugins info if we want to, but in this case we are creating a fresh instance with cookies.
     const page = await context.newPage(); // create a new page in the browser context, which represents a single tab or window in browser.

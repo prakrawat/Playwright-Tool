@@ -33,7 +33,7 @@ test('FirstTestcase', async ({ browser }) => {
 
 // Second testcase added here, and it will also be run by Playwright when the tests are executed. This test case is currently empty and does not perform any actions or assertions.
 
-test.only('test2', async ({ page }) => {
+test('test2', async ({ page }) => {
     await page.goto('https://rahulshettyacademy.com/loginpagePractise/');
     
     const title = await page.title();
