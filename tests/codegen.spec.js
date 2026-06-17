@@ -6,7 +6,7 @@ import {test, expect} from '@playwright/test';
 // For example, if you want to generate code for the website 'https://example.com', you can run the following command in your terminal:
 
 test('Code Generation', async ({page}) => {
-    await page.goto('https://example.com');
+    await page.goto('https://rahulshettyacademy.com/client');
     // Add your test steps here
     
 });
