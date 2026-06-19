@@ -32,10 +32,20 @@ test('More Validation', async ({ page }) => {
 })
 
 
-test('Child Window Handling', async ({ page }) => {
+test.only('Child Window Handling', async ({ page }) => {
     await page.goto('https://rahulshettyacademy.com/AutomationPractice/');
 
     // Handle Child Window in playwright
-    await page.locator('#courses-iframe').click();
+    //await page.locator('#courses-iframe').click();
+
+    const frame =await page.frameLocator('#courses-iframe');
+    
+    // Click on the link that contains "lifetime-access" in its href attribute and is visible
+    await frame.locator('li a[href*="lifetime-access"]:visible').click(); 
+
+    const text = await frame.locator('.text h2').textContent();
+    console.log(text.split(" ")[1]); // Print the second word of the text content of the h2 element inside the .text class
+
+    await page.pause();
 
 })
