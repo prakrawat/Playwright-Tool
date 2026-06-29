@@ -1,14 +1,62 @@
 //import { expect, tests, request } from '@playwright/test'
-const {test, expect, request} = require('@playwright/test');
+const { test, expect, request } = require('@playwright/test');
+const { APiUtils } = require('./utils/APiUtils');
 
 const loginPayload = {
     userEmail: "dummyaccountplaywright@yopmail.com",
     userPassword: "Pass@12345"
 }
 
+const orderPayLoad = { orders: [{ country: "Cuba", productOrderedId: "67a8dde5c0d3e6622a297cc8" }] };
+
+
+let response;
+test.beforeAll( async()=>
+{
+   const apiContext = await request.newContext();
+   const apiUtils = new APiUtils(apiContext,loginPayLoad);
+   response =  await apiUtils.createOrder(orderPayLoad);
+ 
+})
+ 
+ 
+//create order is success
+test('@API Place the order', async ({page})=>
+{ 
+    await page.addInitScript(value => {
+ 
+        window.localStorage.setItem('token',value);
+    }, response.token );
+await page.goto("https://rahulshettyacademy.com/client");
+ await page.locator("button[routerlink*='myorders']").click();
+ await page.locator("tbody").waitFor();
+const rows = await page.locator("tbody tr");
+ 
+ 
+for(let i =0; i<await rows.count(); ++i)
+{
+   const rowOrderId =await rows.nth(i).locator("th").textContent();
+   if (response.orderId.includes(rowOrderId))
+   {
+       await rows.nth(i).locator("button").first().click();
+       break;
+   }
+}
+const orderIdDetails =await page.locator(".col-text").textContent();
+//await page.pause();
+expect(response.orderId.includes(orderIdDetails)).toBeTruthy();
+ 
+});
+ 
+//Verify if order created is showing in history page
+// Precondition - create order -
+
+//__________________________________________________________________________________
+
+/*
 let site_token; // Declare a variable to store the token
 
-test.beforeAll('API Validation', async()=> {
+test.beforeAll('API Validation', async () => {
     // create a new context of API request
     const apiContext = await request.newContext();
     const login = await apiContext.post('https://rahulshettyacademy.com/api/ecom/auth/login', {
@@ -23,6 +71,8 @@ test.beforeAll('API Validation', async()=> {
     console.log('Extracted token:', site_token);
 });
 
+*/
+
 // beforeEach is used to run a specific block of code before each test case in the test suite. It is useful for setting up a consistent environment or state for each test, ensuring that tests do not interfere with each other and can be run independently. In this case, it can be used to perform common setup tasks such as navigating to a specific URL, logging in, or initializing variables that are needed for multiple tests.
 
 /*
@@ -30,7 +80,8 @@ test.beforeEach(async () => {
 })
 */
 
-test('Ecomm Login with token', async({ page })=> {
+/*
+test('Ecomm Login with token', async ({ page }) => {
 
     // Inject the token into the local storage of the browser context before navigating to the application URL. This allows the test to bypass the login process and directly access the authenticated state of the application.
     await page.addInitScript(value => {
@@ -43,6 +94,8 @@ test('Ecomm Login with token', async({ page })=> {
     console.log(`Total products: ${await products.count()}`);
 
 });
+
+*/
 
 /*
 test('Ecomm Login', async ({ page }) => {
