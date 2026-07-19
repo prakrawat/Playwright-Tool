@@ -1,0 +1,117 @@
+Playwright Test is an end-to-end test framework for modern web apps. 
+It bundles test runner, assertions, isolation, parallelization and rich tooling. 
+Playwright supports Chromium, WebKit and Firefox on Windows, Linux and macOS, locally or in CI, 
+headless or headed, with native mobile emulation for Chrome (Android) and Mobile Safari.
+
+
+Reliable End to End testing why??
+- Autowait capability, when u test any page may be it will take time to load, it will auto wait for test to execute.
+
+Cross Browser Compatibility & Multiple Platform
+- Chromium, Firefox, Opera
+
+Multilingual Flexibility - Ability to write code in python, javascript, java, C#, typescript.
+
+Tracing & Debugging: playwright have built in tracing & debugging capabilities including automatic screenshot, test video recording without writing single piece of code.
+- have testrunner where u have to see the Action, Before & After execution and everystep u will get the screenshot.
+
+Network Interception: we can utilize playwright API testing libraries to intercept and validate network calls within your web application, enable you to validate edge case scenario.
+
+Browser Context Management : bypass cookies for next testcase bcoz everytime we have to login to execute another testcase.
+
+Codegen Tools: when help u to create testcase code by recording your actions.
+
+
+
+Playwright.config.js help us to run the tests that we have added and created.
+
+
+In JavaScript, nesting means placing one construct (like an object, function, or loop) inside another to create a hierarchical or structured relationship.
+
+It’s a way to organize code and data more clearly, especially when dealing with complex logic or multi-level data structures.
+
+
+
+By default rach test enforces a 30 secound timeout.
+
+
+The course covers two powerful frameworks for designing test cases:
+- Playwright Cucumber BDD Framework
+- Playwright with Mocha
+
+
+https://techbeamers.com/manual-testing-interview-questions-experienced-qa/
+
+
+Css Selector user page.locator()
+
+If Id is present 
+css -> tagname#id( or ) #id
+
+If class attribute is present
+css -> tagname.class( or ) .class
+
+Write css based on any Attribute
+css -> [attribute='value']
+
+Write css with traversing from Parent to child
+css -> parenttagname >> childtagname
+
+If needs to write the locator based on text
+text=''
+
+
+Assertions
+
+In Playwright, assertions are checks that validate whether your application behaves as expected during automated tests. 
+They are implemented using the expect() function, which compares an actual value (from the app under test) to an expected value. 
+If the condition fails, the test is marked as failed.
+
+
+Practice Sites
+https://rahulshettyacademy.com/practice
+
+
+
+Features:
+Cross-browser support: Works with Chromium, Firefox, and WebKit (Chrome, Edge, Safari)
+Multiple language support: Supports JavaScript, TypeScript, Python, Java, and C#
+Auto-waiting: Automatically waits for elements to be ready before performing actions
+Headless and headed execution: Run tests in background or with a visible browser
+Network interception and mocking: Capture, modify, or block network requests
+Parallel execution: Run tests faster using multiple workers
+Mobile and device emulation: Test across different screen sizes and devices
+Powerful selectors: Supports CSS, XPath, text, and role-based locators
+Screenshots and videos: Capture execution for debugging and reporting
+Built-in API testing: Test backend APIs without needing external tools
+Because of this, Playwright enables fast, reliable, and scalable end-to-end testing across multiple browsers and platforms.
+
+
+
+
+
+Specific browser
+npx playwright test –project=firefox
+
+
+
+What is a browser context in Playwright?
+- A browser context in Playwright is like an incognito or private window. It allows you to create isolated browser sessions within a single browser instance.
+- Each context has its own cookies, local storage, and cache, perfect for testing multiple users in parallel.
+
+Why use contexts?
+- Simulate multiple users
+- Speed up tests by reusing a browser instance
+- Improve test isolation without launching multiple browsers
+
+
+How do you handle asynchronous operations like waiting for elements in Playwright?
+- Playwright has built-in auto-waiting, which means it automatically waits for elements to be ready before interacting with them. However, you can still use manual waiting when needed, especially for dynamic content.
+
+Example using waitForSelector():
+- await page.waitForSelector(‘#user-info’, { state: ‘visible’ });
+- await page.click(‘#user-info’);
+
+Example using expect() (preferred):
+- await expect(page.locator(‘#user-info’)).toBeVisible();
+- Playwright’s expect() assertion includes retries and ensures the element meets the condition before proceeding.

@@ -1,0 +1,45 @@
+Node.js : Node install
+
+Node.js is a free, open-source JavaScript runtime that runs on Windows, Mac, Linux, and more.
+It lets you execute JavaScript code outside of a web browser, enabling server-side development with JavaScript.
+Built on Chrome's V8 JavaScript engine, Node.js is designed for building scalable network applications efficiently.
+
+In terminal write : npm init playwright
+- npm init playwright@latest
+
+npx playwright test
+    Runs the end-to-end tests.
+
+  npx playwright test --ui
+    Starts the interactive UI mode.
+
+  npx playwright test --project=chromium
+    Runs the tests only on Desktop Chrome.
+
+  npx playwright test example
+    Runs the tests in a specific file.
+
+  npx playwright test --debug
+    Runs the tests in debug mode.
+
+  npx playwright codegen
+    Auto generate tests with Codegen.
+
+We suggest that you begin by typing:
+
+    npx playwright test
+
+npx playwright show-report
+
+And check out the following files:
+  - .\tests\example.spec.js - Example end-to-end test
+  - .\playwright.config.js - Playwright Test configuration
+
+Visit https://playwright.dev/docs/intro for more information. ✨
+
+
+Command
+npx playwright test --headed
+npx playwright test
+
+Demo Site: https://demowebshop.tricentis.com/
