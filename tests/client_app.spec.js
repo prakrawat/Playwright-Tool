@@ -1,141 +1,177 @@
-const {test, expect} = require('playwright/test') // import the test from the Playwright testing library
+/**
+ * client_app.spec.js
+ *
+ * Three independent tests covering different Playwright interaction patterns:
+ *
+ *  1. "Client App test"      — Login to the e-commerce client app and read product/price data
+ *  2. "Radio & Checkbox"     — Interact with dropdowns, radio buttons, checkboxes, and attribute assertions
+ *  3. "Another Child Window" — Handle a link that opens a new browser tab (child window)
+ */
+
+const { test, expect } = require('playwright/test');
 
 
-test('Client App test : Testcase One', async({browser}) => {
+/**
+ * Test 1: Log in to the client app and read product/price information from the dashboard.
+ * Demonstrates waitForLoadState('networkidle') to ensure the page has fully loaded before reading data.
+ */
+test('Client App test : Testcase One', async ({ browser }) => {
 
-    const context = await browser.newContext(); // it's like a new fresh instance of browser (new context) and we can inject the cookies or plugins info if we want to, but in this case we are creating a fresh instance with cookies.
-    const page = await context.newPage(); // create a new page in the browser context, which represents a single tab or window in browser.
-    await page.goto('https://rahulshettyacademy.com/client'); // navigate to the specified URL, which is the client application of Rahul Shetty Academy. 
-    
-    // console.log(await page.locator('.title').textContent());
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto('https://rahulshettyacademy.com/client');
 
     await page.locator('[id="userEmail"]').fill('dummyaccount@yopmail.com');
     await page.locator('[id="userPassword"]').fill('Test@1234');
     await page.locator('#login').click();
-    await page.waitForLoadState('networkidle'); // wait for the network to be idle, which means that all the network requests have been completed and there are no more pending requests. This is useful to ensure that the page has fully loaded before proceeding with any further actions or assertions.
 
+    // networkidle waits until there are no pending network requests for at least 500ms.
+    // This ensures the product grid has fully loaded before we try to read it.
+    await page.waitForLoadState('networkidle');
 
-   //console.log(await page.locator('.card-body b').nth(0).textContent());
-   console.log(await page.locator('.card-body b').allTextContents());
-   console.log(await page.locator('.text-muted').allTextContents());
-
+    // allTextContents() collects text from all matching elements into a string array
+    console.log(await page.locator('.card-body b').allTextContents());    // Product names
+    console.log(await page.locator('.text-muted').allTextContents());     // Product prices/descriptions
 });
 
 
-test('Radio & Checkbox Buttons', async({browser})=> {
+/**
+ * Test 2: Interact with dropdown, radio buttons, checkbox, and verify element attributes.
+ *
+ * Covers:
+ *  - selectOption() for <select> dropdowns
+ *  - click() vs check() for radio buttons and checkboxes
+ *  - isChecked() to read checkbox/radio state
+ *  - uncheck() to explicitly deselect a checkbox
+ *  - toBeChecked() and toBeFalsy() assertions
+ *  - toHaveAttribute() to assert an element's HTML attribute value
+ */
+test('Radio & Checkbox Buttons', async ({ browser }) => {
 
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto('https://rahulshettyacademy.com/loginpagePractise/');
+
     console.log(await page.locator("[for='username']"));
     await page.locator('#username').fill('rahulshettyacademy');
     console.log(await page.locator("[for='password']"));
     await page.locator('#password').fill('Learning@830$3mK2');
 
-    // Page Loader
-    await page.waitForLoadState('networkidle'); // wait for the network to be idle, which means that all the network requests have been completed and there are no 
+    await page.waitForLoadState('networkidle');
 
-    // Dropdown Value Print
-    const dropdown_values = await page.locator('select.form-control').allTextContents(); // This line of code is using the Playwright testing library to locate all elements on the page that have a type attribute with the value "option" and then retrieves their text content. The retrieved text content is stored in the variable dropdown_values, which can be used later in the test for assertions or further processing.
-    console.log(dropdown_values)
+    // --- DROPDOWN ---
+    // allTextContents() prints all available options in the dropdown for reference
+    const dropdown_values = await page.locator('select.form-control').allTextContents();
+    console.log(dropdown_values);
 
-    // Drodpown
-    const dropdown = await page.locator('select.form-control');
-    await dropdown.selectOption('Consultant'); // select the option with the value 'Consultant' from the dropdown menu.
-    
-    // Radio Button Values
+    // selectOption() selects by visible text — more readable than selecting by index
+    await page.locator('select.form-control').selectOption('Consultant');
+
+    // --- RADIO BUTTONS ---
+    // Print all radio button labels to the console
     const radio_button_values = await page.locator('.radiotextsty').allTextContents();
     console.log(radio_button_values);
 
-    // Radio Button
-    const radiobutton = await page.locator('.checkmark').last().click(); // click on the last radio button with the class 'checkmark' on the page. This is typically used to select a specific option from a group of radio buttons.
+    // click() on a .checkmark element selects its associated radio button
+    await page.locator('.checkmark').last().click();
+
+    // Confirm the selection dialog that appears after clicking the radio button
     await page.locator('#okayBtn').click();
 
-    console.log(await page.locator('.radiotextsty').last().isChecked()); 
-    expect(await page.locator('.radiotextsty').last()).toBeChecked(); // This line of code is using the Playwright testing library to assert that the last element with the class 'radiotextsty' on the page is currently checked (selected). The toBeChecked() assertion checks if the specified element is in a checked state, which is typically used for radio buttons or checkboxes. If the assertion fails, it will throw an error indicating that the expected condition was not met.
+    // isChecked() returns a boolean — used here for logging; toBeChecked() is the assertion form
+    console.log(await page.locator('.radiotextsty').last().isChecked());
+    expect(await page.locator('.radiotextsty').last()).toBeChecked();
 
-    // Checkbox terms and conditions
-    //const terms = await page.locator('.text-white.termsText').textContent();
+    // --- CHECKBOX ---
+    // inputValue() reads the value attribute of the checkbox input (not its checked state)
     const terms = await page.locator('.text-white.termsText').inputValue();
     console.log(terms);
+
     const belowdetails = await page.locator('.text-center.text-white').textContent();
     console.log(belowdetails);
-   // const checkbox = await page.locator("[type='checkbox']").click();
 
-   // if u want to check the check box
-    await page.locator("[type='checkbox']").click(); // check if the checkbox with the specified selector is currently checked (selected) or not. It returns a boolean value (true or false) indicating the state of the checkbox.
-    const checkbox = await page.locator("[type='checkbox']").isChecked(); // check if the checkbox with the specified selector is currently checked (selected) or not. It returns a boolean value (true or false) indicating the state of the checkbox.
+    // click() toggles the checkbox; use check()/uncheck() when you need an explicit state
+    await page.locator("[type='checkbox']").click();
+
+    // isChecked() returns true/false — used here for logging
+    const checkbox = await page.locator("[type='checkbox']").isChecked();
     console.log(checkbox);
+
+    // uncheck() explicitly unchecks the box, regardless of its current state
     await page.locator("[type='checkbox']").uncheck();
-    expect(await page.locator("[type='checkbox']").isChecked()).toBeFalsy();  // This line of code is using the Playwright testing library to assert that the checkbox with the specified selector is not checked (unchecked). The toBeFalsy() assertion checks if the specified value is falsy, which means it evaluates to false in a boolean context. In this case, it checks if the checkbox is not selected. If the assertion fails, it will throw an error indicating that the expected condition was not met.
-    
-    // expect is adding without await bcoz await is used to wait for the promise to resolve and return the value, while expect is used to make assertions on that value. In this case, we are asserting that the checkbox is not checked (unchecked) after we have unchecked it. The assertion will be evaluated immediately without waiting for any asynchronous operations, as the state of the checkbox has already been determined by the previous actions in the test.
-    // we have added await inside brackets because operations is performing inside the brackets and we want to wait for that operation to complete before making the assertion. In this case, we are waiting for the isChecked() method to return the state of the checkbox before asserting that it is falsy (unchecked). This ensures that we are making the assertion based on the most up-to-date state of the checkbox after we have performed the uncheck action.
 
+    // await is inside the brackets because isChecked() is async — we need its resolved value to assert
+    expect(await page.locator("[type='checkbox']").isChecked()).toBeFalsy();
 
-    //await expect(page.locator("[type='checkbox']").isChecked()).toBeTruthy(); // This line of code is using the Playwright testing library to assert that the checkbox with the specified selector is checked (selected). The toBeTruthy() assertion checks if the specified value is truthy, which means it evaluates to true in a boolean context. In this case, it checks if the checkbox is selected. If the assertion fails, it will throw an error indicating that the expected condition was not met.
-
-    // Blinking Text
-    const locator = await page.locator('.blinkingText');
+    // --- ATTRIBUTE ASSERTION ---
+    // toHaveAttribute() verifies that a specific HTML attribute has the expected value
+    // Here we confirm the document link has class="blinkingText" as expected
     const documentLink = await page.locator('[href*="documents-request"]');
-    await expect(documentLink).toHaveAttribute("class", "blinkingText"); // This line of code is using the Playwright testing library to assert that the element located by the locator variable, which is expected to have a class attribute with the value "blinkingText". The toHaveAttribute() assertion checks if the specified element has the specified attribute with the expected value. If the assertion fails, it will throw an error indicating that the expected condition was not met.
-
-    //await page.pause(); // pause the test execution, which allows you to inspect the state of the page and interact with it manually before resuming the test. This is useful for debugging and analyzing the behavior of the application during testing.
-    //await browser.close(); // close the browser instance after the test is completed to free up system resources and ensure that there are no lingering browser processes running in the background.
+    await expect(documentLink).toHaveAttribute("class", "blinkingText");
 });
 
 
+/**
+ * Test 3: Handle a link that opens content in a new browser tab (child window).
+ *
+ * Playwright does not auto-switch to new tabs. The pattern is:
+ *  Promise.all([waitForEvent('page'), trigger-the-click])
+ * This listens for the 'page' event (new tab opened) BEFORE the click fires,
+ * so the event is captured regardless of how fast the new tab opens.
+ *
+ * Also demonstrates:
+ *  - Reading text from a child page element
+ *  - Parsing an email address from text using split()
+ *  - Filling an input on the original page with data extracted from the child page
+ *  - textContent() vs inputValue(): textContent() reads visible text; inputValue() reads <input> values
+ */
+test("Another Child Window", async ({ browser }) => {
 
-test("Another Child Window", async({browser})=> {
     const bcontext = await browser.newContext();
     const page = await bcontext.newPage();
     await page.goto('https://rahulshettyacademy.com/loginpagePractise/');
-    const documentLink = await page.locator('[href*="documents-request"]')
 
+    const documentLink = await page.locator('[href*="documents-request"]');
+
+    // Promise.all ensures we start listening for the new-page event BEFORE triggering the click.
+    // Without this, the new tab might open before the listener is registered and we'd miss it.
     const [childPage] = await Promise.all([
-    
-        // Listen for any new page pending, rejected, fulfilled.
-        //How can you identify if a new page has successfully opened after clicking a link? : Using waitForEvent() method to listen for the 'page' event, which is triggered when a new page is opened. By using this method, you can ensure that the test waits for the new page to open before proceeding with any further actions or assertions on that page. This helps to avoid any timing issues and ensures that the test interacts with the new page only after it has been fully loaded and is ready for interaction.
-        
-        bcontext.waitForEvent('page'), // wait for the new page (child window) to open after clicking the document link. This is necessary because the click action may trigger the opening of a new window, and we need to wait for that event to occur before proceeding with any further actions or assertions on the new page.
-        //listen for any new page pending,rejected,fulfilled
-        documentLink.click(),
+        bcontext.waitForEvent('page'), // Resolves when the new tab opens
+        documentLink.click(),          // Triggers the new tab
         console.log(documentLink),
-    ])  // new page is opened
+    ]);
 
-    const text = await  childPage.locator('.red').textContent(); // locate the element with the class 'red' on the new page and retrieve its text content. This is typically used to extract specific information from the new page after it has been opened.
+    // Read text from an element on the newly opened child tab
+    const text = await childPage.locator('.red').textContent();
     console.log(text);
 
-    // Split
+    // --- EXTRACT EMAIL DOMAIN ---
+    // Split on '@' to separate local part and domain: ['mentor', 'rahulshettyacademy.com ...']
     const email_format = await childPage.locator('.red').textContent();
-    const array_text = await email_format.split('@'); 
+    const array_text = await email_format.split('@');
     console.log(array_text);
-    const domain = array_text[1].split(" ")[0]; // split the second part of the email address (after the '@' symbol) by space and take the first part, which is typically the domain name of the email address. This is done to extract the domain from the email address for further processing or assertions in the test.
+
+    // Split on space and take index [0] to isolate just the domain name (e.g. "rahulshettyacademy.com")
+    const domain = array_text[1].split(" ")[0];
     console.log(domain);
 
-    // Using Array Format
-    const red_mail = await childPage.locator('[href*="academy.com"]').allTextContents(); 
+    // --- READ ALL EMAIL LINKS FROM CHILD PAGE ---
+    const red_mail = await childPage.locator('[href*="academy.com"]').allTextContents();
     console.log(red_mail);
-    const email = red_mail[10];
+    const email = red_mail[10]; // Pick the 11th email link from the list
     console.log(email);
 
-    // Need to add this email in login page.
+    // --- FILL THE ORIGINAL PAGE WITH DATA FROM CHILD PAGE ---
+    // The original page (page) is still open; fill its username input with the extracted email
+    await page.locator('#username').fill(email);
 
-    const login_email = await page.locator('#username').fill(email);
+    // textContent() reads inner text of the element — does NOT work for <input> values
+    const login_email_value = await page.locator('#username').textContent();
+    console.log(login_email_value); // Will print empty — use inputValue() for <input> fields
 
-    console.log(login_email);
-    console.log("------------------------------");
-    
-    const login_email_value = await page.locator('#username').textContent(); 
-    console.log(login_email_value); // value will not print because textContent() is used to retrieve the text content of an element, but in this case, we are trying to retrieve the value of an input field (username) which does not have any text content. Instead, we should use the inputValue() method to retrieve the value of the input field.
-    
-    console.log("------------------------------");
+    // inputValue() correctly reads the current value of an <input> element
     const login_email_input_value = await page.locator('#username').inputValue();
-    // const login  = await page.locator();
-    console.log(login_email_input_value);  
-    await page.pause();
-    
-    // Give an error because we are trying to locate the element with the class 'red' on the original page (page) instead of the new page (childPage) where the element 
-    //const text = await  page.locator('.red').textContent(); // locate the element with the class 'red' on the new page and retrieve its text content. This is typically used to extract specific information from the new page after it has been opened.
+    console.log(login_email_input_value);
 
+    await page.pause();
 });

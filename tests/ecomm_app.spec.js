@@ -1,100 +1,107 @@
-const { test, expect } = require('playwright/test');
+/**
+ * ecomm_app.spec.js
+ *
+ * Full end-to-end test for the e-commerce application covering:
+ *  - Login with email/password via the UI
+ *  - Finding a specific product on the home page
+ *  - Adding it to the cart
+ *  - Proceeding to checkout and selecting a country from a dynamic dropdown
+ *
+ * Uses the `browser` fixture (manual context/page creation) to demonstrate
+ * how to create a fresh browser context explicitly.
+ *
+ * Test account: dummyaccountplaywright@yopmail.com / Pass@12345
+ */
 
-// dummyaccountplaywright@yopmail.com
-// Pass@12345
+const { test, expect } = require('playwright/test');
 
 test('Ecomm Login', async ({ browser }) => {
 
-    // Credentials and URL for the e-commerce application
     const URL = "https://rahulshettyacademy.com/client";
     const email = "dummyaccountplaywright@yopmail.com";
     const password = 'Pass@12345';
     const product_name = "ADIDAS ORIGINAL";
 
-    // Creating a new browser context and page for the test case
+    // Manually create a fresh browser context and page.
+    // This isolates this test from any cookies or storage left by other tests.
     const context = await browser.newContext();
     const page = await context.newPage();
 
-    // Navigating to the e-commerce application login page
-    const products = page.locator('.card-body');
+    // --- LOGIN ---
     await page.goto(URL);
     await page.locator("[type='email']").fill(email);
     await page.locator("[type='password']").fill(password);
     await page.locator("#login").click();
+
+    // Wait for the products page to fully load (no pending network requests)
     await page.waitForLoadState('networkidle');
 
-    // Assertion to check if the user is successfully logged in by verifying the presence of the "Products" text on the page.
+    // --- PRODUCTS PAGE ---
+    const products = page.locator('.card-body');
+
+    // Wait for at least one product card to appear before reading the DOM
     await page.locator(".card-body").first().waitFor();
+
     const card_details = await page.locator(".card-body").allTextContents();
     console.log(`Printing all Card details: ${card_details}`);
 
-    // Assertion to check if the "Products" text is present in the first card body element, which indicates that the user has successfully logged in and is on the products page.
     const titles = await page.locator(".card-body b").allTextContents();
     console.log(`Printing all the product titles: ${titles}`);
 
-    // Counting the number of products displayed on the home page after login and printing it to the console.
     const count = await products.count();
     console.log(`Total products: ${count}`);
 
-    // Logic to verify if the desired product (ADIDAS ORIGINAL) is present in the list of products displayed on the home page after login. 
-    const desired_product = await page.locator(".card-body b").filter({ hasText: product_name }).first();
-
+    // --- ADD TO CART ---
+    // Iterate through product cards to find the target product by name and click "Add To Cart"
     for (let i = 0; i < count; i++) {
         const product_title = await products.nth(i).locator("b").textContent();
-        //console.log(`Printing product title: ${await product_title.locator("b").textContent()}`);
         console.log(`Printing product title: ${product_title}`);
         if (product_title === product_name) {
             await products.nth(i).locator("text= Add To Cart").click();
         }
         break;
-    };
+    }
+    console.log("Add to Cart Successfully clicked for the desired product.");
 
-    console.log(" Add to Cart Successfully clicked for the desired product.");
+    // --- CART PAGE ---
+    await page.locator("[routerlink*='cart']").click();
 
-    // Add to Cart Page
-    const cart_button = await page.locator("[routerlink*='cart']").click();
-
-    // wait till list is loading in the add to cart page.
+    // Wait for the cart items list to render before asserting
     await page.locator("div li").first().waitFor();
     const cart_products = await page.locator("div li").allTextContents();
 
-    // isVisible() method is used to check if the desired product is visible in the cart page after adding it to the cart. It returns a boolean value indicating whether the element is visible or not.
-    // isVisible() don't have to wait for the element to be visible, it will return false if the element is not visible, but it will not throw an error. So we can use it to check if the desired product is added to the cart or not.
-
-    // h3:has-text('ADIDAS ORIGINAL') is a CSS selector that selects an h3 element that contains the text 'ADIDAS ORIGINAL'. This selector is used to check if the desired product is added to the cart by verifying its visibility on the cart page.
+    // isVisible() returns false immediately if the element is absent — does NOT throw.
+    // Useful for soft checks where the element might not exist yet.
     const valid_product_added = await page.locator("h3:has-text('ADIDAS ORIGINAL')").isVisible();
     console.log(`Is the desired product added to the cart? ${valid_product_added}`);
-
-    // Assertion to check if the desired product is successfully added to the cart by verifying its visibility on the cart page.
     expect(valid_product_added).toBeTruthy();
 
-    // Click on Chekckout
-    //await page.locator("[class ='btn btn-primary']").click();
+    // --- CHECKOUT ---
     await page.locator("text=Checkout").click();
 
-    // Wait for the checkout page to load and display the list of products in the cart.
+    // Type "ind" slowly to trigger the autocomplete dropdown for country selection
     await page.locator("[placeholder*='Select Country']").pressSequentially("ind", { delay: 200 });
-    const dropdown = await page.locator(".ta-results"); // Type 'ind' in the country selection input field to trigger the dropdown list of countries, and then select the desired country from the list.
+    const dropdown = await page.locator(".ta-results");
+
+    // Wait for the dropdown suggestions to appear
     await dropdown.first().waitFor();
     const dropdown_count = await dropdown.locator("button").count();
     console.log(`Total dropdown options: ${dropdown_count}`);
+
     const dropdown_text_value = "India";
 
+    // Find "India" in the dropdown list and click it
     for (let i = 0; i < dropdown_count; i++) {
         let dropdown_text = await dropdown.locator("button").nth(i).textContent();
-
         console.log(`Printing dropdown text: ${dropdown_text}`);
 
-        //if (dropdown_text === " India") {
-        //if (dropdown_text.includes() === "India") {
+        // trim() removes leading/trailing whitespace that the API may include around option text
         if (dropdown_text.trim() === dropdown_text_value) {
             await dropdown.locator("button").nth(i).click();
             break;
         }
     }
 
-    // page.pause() is a method provided by Playwright that allows you to pause the execution of the test at a specific point. which 
+    // Pause for manual inspection — remove before committing to CI
     await page.pause();
-
-
 });

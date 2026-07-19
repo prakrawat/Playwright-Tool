@@ -14,7 +14,9 @@
   "author": "",
   "type": "commonjs",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test tests/WebAPIValidation.spec.js --headed"
+  },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.1"

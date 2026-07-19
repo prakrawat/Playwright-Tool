@@ -1,47 +1,71 @@
-import {expect, test} from 'playwright/test';
+/**
+ * contactus.spec.js
+ *
+ * Covers two separate interaction patterns on the Angular practice site:
+ *  1. Contact Us form — fills text inputs, uses checkboxes, radio buttons, and a select dropdown,
+ *     then asserts the success message after submission.
+ *  2. Shop navigation — clicks through to the shop page and adds a specific product to the cart.
+ *
+ * Key Playwright locator strategies demonstrated:
+ *  - getByLabel()       — finds form controls by their associated <label> text
+ *  - getByPlaceholder() — finds inputs by placeholder attribute
+ *  - getByRole()        — finds elements by ARIA role + accessible name
+ *  - getByText()        — finds elements by visible text
+ *  - filter()           — narrows a locator to items matching a condition
+ */
 
-test('Contact Us', async({browser})=>{
+import { expect, test } from 'playwright/test';
+
+test('Contact Us', async ({ browser }) => {
+
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto('https://rahulshettyacademy.com/angularpractice/');
 
-    // Practice fill and type method 
+    // --- FILL THE CONTACT FORM ---
+
+    // fill() sets the value of an input directly (faster than typing character by character)
     await page.locator('.form-control').first().fill('Name');
     await page.locator("[name='email']").fill('name@yopmail.com');
 
-    // getByLabel is used to get the element by its label text, and then we can perform actions on that element, such as clicking or filling it with text.
-    // Mostly used for checkboxes and radio buttons, but it can also be used for other types of form elements that have associated labels.
-
+    // getByLabel() locates the element associated with a label via the for/id relationship.
+    // click() on a checkbox toggles its checked state.
     await page.getByLabel('Check me out if you Love IceCreams!').click();
-    await page.getByLabel('Employed').check(); 
-    await page.getByLabel('Gender').selectOption('Female'); 
 
-    // getByPlaceholder is used to get the element by its placeholder text
+    // check() explicitly sets a checkbox/radio to checked — idempotent, won't toggle if already checked
+    await page.getByLabel('Employed').check();
+
+    // selectOption() selects a value from a <select> dropdown by its visible text or value attribute
+    await page.getByLabel('Gender').selectOption('Female');
+
     await page.getByPlaceholder("Password").fill("abc1234");
 
-    // getByRole is used to get the element by its role and name
-    await page.getByRole("button", {name: "Submit"}).click(); // click on the submit button
+    // getByRole('button') targets the submit button by its ARIA role and visible label
+    await page.getByRole("button", { name: "Submit" }).click();
 
-    //getByText is used to get the element by its text content
+    // --- ASSERT FORM SUBMISSION SUCCESS ---
+    // isVisible() returns a boolean — does not throw if the element is absent
     const success_text = await page.getByText("Success! The Form has been submitted successfully!.").isVisible();
     expect(success_text).toBeTruthy();
 
-    await page.getByRole("link", {name: "Shop"}).click();
+    // --- NAVIGATE TO SHOP ---
+    await page.getByRole("link", { name: "Shop" }).click();
 
-    // filter method is used to filter the elements based on the text content
-
-    await page.locator("app-card").filter({hasText: "Blackberry"}).getByRole("button").click(); 
-    
-    // click on the add to cart button for the product with text "Blackberry"
-
-    //await page.pause();
-    // npm playwright test 'file name' --ui use for opening the Playwright Test Runner UI
-
+    // filter() restricts the app-card locator to only the card that contains "Blackberry" text,
+    // then getByRole('button') clicks the "Add to Cart" button within that card.
+    await page.locator("app-card")
+        .filter({ hasText: "Blackberry" })
+        .getByRole("button")
+        .click();
 });
 
-// Playwright Inspector is a tool that allows you to inspect and debug your Playwright tests. 
-// It provides a visual interface to see the elements on the page, their properties, and how they interact with your test code. You can use it to identify locators, check element states, and troubleshoot issues in your tests. 
-// To use Playwright Inspector, you can run your tests with the --debug flag, which will open the inspector when a test fails or when you have a breakpoint in your code.
-
-// npx playwright test 'file name' --debug use for opening the Playwright Inspector when a test fails or when you have a breakpoint in your code.
-
+/**
+ * Playwright debugging tips:
+ *
+ * --ui flag:    npx playwright test 'contactus.spec.js' --ui
+ *               Opens the Playwright Test Runner UI for visual step-by-step execution.
+ *
+ * --debug flag: npx playwright test 'contactus.spec.js' --debug
+ *               Opens Playwright Inspector, which highlights elements as locators are evaluated
+ *               and pauses at breakpoints or failures. Useful for troubleshooting flaky selectors.
+ */
